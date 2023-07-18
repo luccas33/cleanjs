@@ -1,0 +1,22 @@
+{
+    "name": "cleanjs",
+    "version": "1.0.0",
+    "description": "FAQ for Suport",
+    "main": "main.ts",
+    "scripts": {
+      "dev": "npx webpack --config webpack.config.js -w",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "@types/lodash": "^4.14.194",
+      "ts-loader": "^9.4.3",
+      "typescript": "^5.0.4",
+      "webpack": "^5.83.1",
+      "webpack-cli": "^5.1.1"
+    },
+    "dependencies": {
+      "lodash": "^4.17.21"
+    }
+  }
