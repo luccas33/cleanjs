@@ -55,7 +55,7 @@ function getPageByPath(path: string): IPage {
     }
     if (rote) {
         rote.isActive = true;
-        return rote.createComponent();
+        return rote.createPage();
     }
     return {
         mainPanel: genel(notFoundPage).elm,

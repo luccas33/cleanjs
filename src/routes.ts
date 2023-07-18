@@ -1,9 +1,9 @@
 
 import { IRote } from './model/iroute';
-import { CrudPage } from './pages/crud-page';
+import { PersonsPage } from './pages/persons-page';
 import { HomePage } from './pages/home-page';
 
 export const routes: IRote[] = [
-    {path: 'home', label: 'Home', createComponent: () => new HomePage()},
-    {path: 'crud', label: 'CRUD', createComponent: () => new CrudPage()}
+    {path: 'home', label: 'Home', createPage: () => new HomePage()},
+    {path: 'persons', label: 'Persons', createPage: () => new PersonsPage()}
 ];

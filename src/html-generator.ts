@@ -70,7 +70,8 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
     });
     applyValues(elmValues, elm);
     model.childs = model.childs || [];
-    model.childs.forEach(c => {
+    model.childs = Array.isArray(model.childs) ? model.childs : [model.childs];
+    model.childs.forEach((c: HTMLElementModel) => {
         c.super = model;
         genel(c);
         elm.append(c.elm);
@@ -86,6 +87,12 @@ export function removeChilds(elm: HTMLElement) {
 export function addChild(elm: HTMLElement, model: HTMLElementModel) {
     if (!elm || !model) return;
     elm.append(genel(model).elm);
+}
+
+export function genChild(elm: HTMLElement, model: HTMLElementModel) {
+    if (!elm || !model) return;
+    removeChilds(elm);
+    addChilds(elm, [model]);
 }
 
 export function addChilds(elm: HTMLElement, models: HTMLElementModel[]) {

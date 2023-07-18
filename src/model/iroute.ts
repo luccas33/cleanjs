@@ -1,6 +1,6 @@
 export interface IRote {
     path: string,
     label: string,
-    createComponent: Function,
+    createPage: Function,
     isActive?: boolean
 }
