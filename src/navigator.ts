@@ -2,6 +2,7 @@ import { resetFlexCSS } from "./flexcss";
 import { genel } from "./html-generator";
 import { HTMLElementModel } from "./model/html-element-model";
 import { IPage } from "./model/ipage";
+import { IRote } from "./model/iroute";
 import { HeaderComp } from "./pages/shared/header-comp";
 import { routes } from "./routes";
 
@@ -9,6 +10,8 @@ const notFoundPage: HTMLElementModel = {
     tag: 'main',
     childs: [{tag: 'h1', textContent: 'Page not found!'}]
 };
+
+const generatedPages: {path: string, page: IPage}[] = [];
 
 export function restorePage() {
     let params = (new URL(document.location.href)).searchParams;
@@ -55,10 +58,18 @@ function getPageByPath(path: string): IPage {
     }
     if (rote) {
         rote.isActive = true;
-        return rote.createPage();
+        return generatePage(rote);
     }
     return {
         mainPanel: genel(notFoundPage).elm,
         init: () => null
     };
+}
+
+function generatePage(rote: IRote) {
+    let generatedPage = generatedPages.find(p => p.path === rote.path);
+    if (generatedPage) return generatedPage.page;
+    let page = rote.createPage();
+    generatedPages.push({path: rote.path, page});
+    return page;
 }

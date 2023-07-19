@@ -1,4 +1,4 @@
-import { addChild, genChild, genel } from "../html-generator";
+import { genChild, genel } from "../html-generator";
 import { HTMLElementModel } from "../model/html-element-model";
 import { IPage } from "../model/ipage";
 import { IPerson } from "../model/iperson";
@@ -21,7 +21,7 @@ export class PersonsPage implements IPage {
     }
 
     public init() {
-        addChild(this.mainPanel, { tag: 'div', childs: [
+        genChild(this.mainPanel, { tag: 'div', childs: [
             {tag: 'h1', textContent: 'Persons'},
             {tag: 'div', ref: 'formContainer', childs: (root: any) => this.getForm(root)},
             {tag: 'div', ref: 'tableContainer', childs: (root: any) => this.genTable(root)}
