@@ -1,4 +1,4 @@
-import { addChild, addChilds, genel } from "../../html-generator";
+import { addChilds, genel } from "../../html-generator";
 import { IComponent } from "../../model/icomponent";
 import { applyCSS } from '../../cssjs';
 import { routes } from "../../routes";
