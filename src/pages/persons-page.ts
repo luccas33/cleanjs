@@ -2,11 +2,12 @@ import { genChild, genel } from "../html-generator";
 import { HTMLElementModel } from "../model/html-element-model";
 import { IPage } from "../model/ipage";
 import { IPerson } from "../model/iperson";
+import { FormInputComp } from "./shared/form-input-comp";
 
 export class PersonsPage implements IPage {
 
-    public readonly mainPanel: HTMLElement;
-    public readonly pageCss?: string | undefined;
+    public readonly mainPanel = genel({tag: 'main'}).elm;
+    public readonly pageCss = '/styles/persons.css';
     private personId = 1;
 
     persons: IPerson[] = [
@@ -14,11 +15,6 @@ export class PersonsPage implements IPage {
         {name: 'Mario', email: 'mario@encanador.com', phone: '56498435698', id: this.personId++},
         {name: 'Zé', email: 'zealberto@mail.com', phone: '3184654321', id: this.personId++}
     ];
-
-    constructor() {
-        this.mainPanel = genel({tag: 'main'}).elm;
-        this.pageCss = '/styles/persons.css'
-    }
 
     public init() {
         genChild(this.mainPanel, { tag: 'div', childs: [
@@ -33,18 +29,9 @@ export class PersonsPage implements IPage {
         person.id = person.id || this.personId++;
         return {
             tag: 'div', className: 'form', childs: [
-                {tag: 'div', className: 'input', childs: [
-                    {tag: 'label', textContent: 'Name'},
-                    {tag: 'input', value: person.name, onchange: (p: any) => person.name = p.elm.value}
-                ]},
-                {tag: 'div', className: 'input', childs: [
-                    {tag: 'label', textContent: 'Phone'},
-                    {tag: 'input', type: 'number', value: person.phone, onchange: (p: any) => person.phone = p.elm.value}
-                ]},
-                {tag: 'div', className: 'input', childs: [
-                    {tag: 'label', textContent: 'Email'},
-                    {tag: 'input', value: person.email, onchange: (p: any) => person.email = p.elm.value}
-                ]},
+                new FormInputComp('Name', () => person.name, (value: string) => person.name = value),
+                new FormInputComp('Phone', () => person.phone, (value: string) => person.phone = value),
+                new FormInputComp('Email', () => person.email, (value: string) => person.email = value),
                 {tag: 'div', className: 'save', childs: [
                     {tag: 'button', textContent: 'Save', onclick: () => {
                         if (person.name.trim() === '') return;

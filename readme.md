@@ -49,6 +49,34 @@ Tutorial do gerador de HTML (arquivo html-generator)
 - genChilds: retira os filhos do elemento e adiciona uma lista de filhos.
 - removeChilds: retira os filhos do elemento
 
+#### Componentes
+
+Um componente é uma classe que deve conter a Function init e a propriedade mainPanel:
+
+```Javascript
+export class MyComponent implements IComponent {
+    public readonly mainPanel = genel({tag: 'div'}).elm;
+    constructor(private props: HTMLElementModel){}
+    init() {}
+}
+```
+
+Páginas devem implementar a interface IPage. É quase idêntica à IComponent, com uma propriedade a mais (pageCss), que é opcional.
+
+```Javascript
+export class MyPage implements IPage {
+    public readonly mainPanel = genel({tag: 'div'}).elm;
+    public readonly pageCss = '/styles/my-page.css';
+    init() {
+        genChild(this.mainPanel, { tag: 'div', childs: [
+            {tag: 'h2', textContent: 'Hello World!'},
+            new MyComponent()
+        ]});
+    }
+}
+```
+
+Fim!
 Sim, o tutorial é só isso!
 
 ### Vamos a um código um pouco mais complexo

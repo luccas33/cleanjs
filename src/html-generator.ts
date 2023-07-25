@@ -1,4 +1,4 @@
-import { HTMLElementModel } from "./model/html-element-model";
+import { ElementChildModel, HTMLElementModel } from "./model/html-element-model";
 import { HTMLElementModelProcessed } from "./model/html-element-model-processed";
 
 export function genels(models: HTMLElementModel[]): HTMLElementModelProcessed[] {
@@ -71,7 +71,19 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
     applyValues(elmValues, elm);
     model.childs = model.childs || [];
     model.childs = Array.isArray(model.childs) ? model.childs : [model.childs];
-    model.childs.forEach((c: HTMLElementModel) => {
+    model.childs.forEach((c: any) => {
+        if (typeof c === 'function') {
+            c = c(model);
+        }
+        if ('tagName' in c) {
+            elm.append(c);
+            return;
+        }
+        if ('mainPanel' in c && 'init' in c && typeof c.init === 'function') {
+            elm.append(c.mainPanel);
+            c.init();
+            return;
+        }
         c.super = model;
         genel(c);
         elm.append(c.elm);
@@ -84,23 +96,23 @@ export function removeChilds(elm: HTMLElement) {
         while (elm.firstChild) elm.removeChild(elm.firstChild);
 }
 
-export function addChild(elm: HTMLElement, model: HTMLElementModel) {
+export function addChild(elm: HTMLElement, model: ElementChildModel) {
     if (!elm || !model) return;
     elm.append(genel(model).elm);
 }
 
-export function genChild(elm: HTMLElement, model: HTMLElementModel) {
+export function genChild(elm: HTMLElement, model: ElementChildModel) {
     if (!elm || !model) return;
     removeChilds(elm);
     addChilds(elm, [model]);
 }
 
-export function addChilds(elm: HTMLElement, models: HTMLElementModel[]) {
+export function addChilds(elm: HTMLElement, models: ElementChildModel[]) {
     if (!elm || !models) return;
     models.forEach(model => elm.append(genel(model).elm));
 }
 
-export function genChilds(elm: HTMLElement, models: HTMLElementModel[]) {
+export function genChilds(elm: HTMLElement, models: ElementChildModel[]) {
     if (!elm || !models) return;
     removeChilds(elm);
     addChilds(elm, models);
