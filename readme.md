@@ -214,3 +214,18 @@ processFlexCSS(sizes);
 
 ```
 Confira um exemplo de responsividade no arquivo pages/flex-css-page.ts
+
+# Eventos JS
+
+Controle o fluxo entre os componentes diretamente, sem se preocupar com a hierarquia da tela.
+
+```Javascript
+
+// Função adicionada para ser executada pelo nome
+appEvents.add('eventName', () => alert('Evento executou'));
+
+
+// Função executada a partir de outro componente:
+appEvents.exec('eventName');
+
+```
