@@ -25,30 +25,6 @@ Exemplo de input de formulário:
 
 Tutorial do gerador de HTML (arquivo html-generator)
 
-#### Propriedades do Modelo:
-
-- tag: nome da tag HTML.
-- childs: tags filhas.
-- elm: o elemento HTML gerado.
-- ref: referência do elemento.
-- refs: objeto com os elementos referenciados (independente da hierarquia).
-- Demais propriedades são atribuídas ao elemento HTML (incluindo o style).
-
-#### Functions no Modelo :
-
-- Functions recebem o objeto modelo no parâmetro.
-- Functions com nome iniciando com 'on' são eventListeners, com o evento na propriedade evt do modelo.
-- Demais functions são executadas e o retorno é atribuído à propriedade em questão.
-
-#### Functions do Gerador:
-
-- genel: gera um elemento.
-- addChild: adiciona um filho ao elemento.
-- addChilds: adiciona uma lista de filhos ao elemento.
-- genChild: retira os filhos do elemento e adiciona um novo.
-- genChilds: retira os filhos do elemento e adiciona uma lista de filhos.
-- removeChilds: retira os filhos do elemento
-
 #### Componentes
 
 Um componente é uma classe que deve conter a Function init e a propriedade mainPanel:
@@ -76,6 +52,30 @@ export class MyPage implements IPage {
     }
 }
 ```
+
+#### Propriedades do Modelo:
+
+- tag: nome da tag HTML.
+- childs: tags filhas.
+- elm: o elemento HTML gerado.
+- ref: referência do elemento.
+- refs: objeto com os elementos referenciados (independente da hierarquia).
+- Demais propriedades são atribuídas ao elemento HTML (incluindo o style).
+
+#### Functions no Modelo :
+
+- Functions recebem o objeto modelo no parâmetro.
+- Functions com nome iniciando com 'on' são eventListeners, com o evento na propriedade evt do modelo.
+- Demais functions são executadas e o retorno é atribuído à propriedade em questão.
+
+#### Functions do Gerador:
+
+- genel: gera um elemento.
+- addChild: adiciona um filho ao elemento.
+- addChilds: adiciona uma lista de filhos ao elemento.
+- genChild: retira os filhos do elemento e adiciona um novo.
+- genChilds: retira os filhos do elemento e adiciona uma lista de filhos.
+- removeChilds: retira os filhos do elemento
 
 Fim!
 Sim, o tutorial é só isso!
@@ -229,3 +229,8 @@ appEvents.add('eventName', () => alert('Evento executou'));
 appEvents.exec('eventName');
 
 ```
+
+# Como Rodar o Projeto
+
+- Para instalar: npm install.
+- Para rodar: npm run dev + Go Live no arquivo index.html (Live Server).
