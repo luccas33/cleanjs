@@ -56,8 +56,9 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 ```Javascript
 export class MyComponent implements IComponent {
     public readonly mainPanel = genel({tag: 'div'}).elm;
-    constructor(private props: HTMLElementModel){}
-    init() {}
+    init() {
+        genChild(this.mainPanel, {tag: 'p', textContent: 'MyComponent works!'});
+    }
 }
 ```
 
@@ -68,10 +69,10 @@ export class MyPage implements IPage {
     public readonly mainPanel = genel({tag: 'div'}).elm;
     public readonly pageCss = '/styles/my-page.css';
     init() {
-        genChild(this.mainPanel, { tag: 'div', childs: [
+        genChilds(this.mainPanel, childs: [
             {tag: 'h2', textContent: 'Hello World!'},
             new MyComponent()
-        ]});
+        ]);
     }
 }
 ```
@@ -122,6 +123,60 @@ genListName(props: any) {
 
 Quer um exemplo mais completo?
 Confira o CRUD na página Persons (arquivo pages/persons-page).
+
+# Flex CSS
+
+Responsividade para todo o CSS, não apenas para a grid.
+
+Esqueça media query.
+
+### Defina seus prefixos e tamanhos
+
+```Javascript
+
+const sizes1 = [
+    { prefix: 's-', minSize: 0 },
+    { prefix: 'm-', minSize: 500 },
+    { prefix: 'l-', minSize: 1000 }
+];
+
+const sizes2 = [
+    { prefix: 'xs-', minSize: 0 },
+    { prefix: 's-', minSize: 433 },
+    { prefix: 'm-', minSize: 733 },
+    { prefix: 'l-', minSize: 1000 },
+    { prefix: 'xl-', minSize: 1333 }
+];
+
+```
+
+### Controle a aplicação de suas classes CSS por prefixos
+
+```CSS
+
+.xs-panel {width: 100%}
+.m-panel {width: 50%}
+.l-panel {width: 33%}
+
+.xs-span {
+    text-align: left;
+    color: black;
+}
+.m-span {
+    text-align: center;
+    color: blue;
+}
+
+```
+
+### Como usar
+
+```Javascript
+
+// Chame esta função no seu main passando sua lista de tamanhos no parâmetro, ou não, para usar os tamanhos default.
+processFlexCSS(sizes);
+
+```
 
 ## Muito mais que um gerador de HTML
 
