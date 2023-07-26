@@ -141,6 +141,25 @@ applyCSSList([this.mainPanel], css);
 
 Confira este exemplo no arquivo pages/name-sorter-page.ts
 
+# Rotas
+
+```Javascript
+
+// Arquivo routes.ts
+export const routes: IRote[] = [
+    {path: 'home', label: 'Home', createPage: () => new HomePage()},
+    {path: 'persons', label: 'Persons', createPage: () => new PersonsPage()},
+    {path: 'name-sorter', label: 'Sortear Nome', createPage: () => new NameSorterPage()},
+    {path: 'flex-css', label: 'Flex CSS', createPage: () => new FlexCSSPage()}
+];
+
+// Ir para a página:
+navToPage(rote.path);
+
+```
+
+Confira um exemplo de uso no arquivo pages/shared/header-comp.ts
+
 # Flex CSS
 
 Responsividade para todo o CSS, não apenas para a grid.

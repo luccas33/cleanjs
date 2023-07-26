@@ -63,6 +63,11 @@ const css = {
         cursor: 'pointer',
         marginLeft: '3px',
         marginRight: '3px',
-        textDecoration: 'underline'
+        padding: '4px 3px 0 4px',
+        borderRight: '2px solid rgb(0, 101, 195)',
+        borderBottom: '2px solid rgb(0, 101, 195)',
+        backgroundColor: '#0084ff',
+        color: 'white',
+        borderRadius: '3px'
     }
 }
