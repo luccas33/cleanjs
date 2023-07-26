@@ -124,6 +124,23 @@ genListName(props: any) {
 Quer um exemplo mais completo?
 Confira o CRUD na página Persons (arquivo pages/persons-page).
 
+# CSS em JS
+
+Escreva CSS em Javascript
+
+```Javascript
+const css: CSSInfo[] = [
+    {selector: '*', display: 'block'},
+    {selector: 'button', width: '125px'},
+    {selector: 'input', width: '117px'},
+    {selector: 'input, button, p', margin: '7px 0'}
+];
+
+applyCSSList([this.mainPanel], css);
+```
+
+Confira este exemplo no arquivo pages/name-sorter-page.ts
+
 # Flex CSS
 
 Responsividade para todo o CSS, não apenas para a grid.
@@ -177,12 +194,4 @@ const sizes2 = [
 processFlexCSS(sizes);
 
 ```
-
-## Muito mais que um gerador de HTML
-
-### Em breve neste tuturial:
-
-- Navegação entre páginas (arquivos routes e pages/shared/header-comp).
-- Escreva CSS em JS (arquivo cssjs).
-- FlexCSS: Adeus mediaquery (arquivo flexcss).
-- Eventos: arquivo app-events.
+Confira um exemplo de responsividade no arquivo pages/flex-css-page.ts
