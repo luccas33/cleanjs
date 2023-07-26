@@ -1,5 +1,14 @@
 import { CSSInfo } from "./model/css-info";
 
+export function applyCSSList(elements: HTMLElement[], cssList: CSSInfo[]) {
+    if (!elements || !cssList) {
+        return;
+    }
+    elements.forEach(element => {
+        cssList.forEach(css => applyCSS(element, css));
+    });
+}
+
 /**
  * element: HTMLElement,
  * 

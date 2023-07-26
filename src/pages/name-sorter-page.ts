@@ -1,9 +1,10 @@
+import { applyCSSList } from "../cssjs";
 import { genChild, genChilds, genel } from "../html-generator";
+import { CSSInfo } from "../model/css-info";
 import { IPage } from "../model/ipage";
 
 export class NameSorterPage implements IPage {
     public readonly mainPanel: HTMLElement;
-    public readonly pageCss  = '/styles/name-sorter.css';
     private names: string[] = [];
 
     constructor() {
@@ -24,6 +25,7 @@ export class NameSorterPage implements IPage {
                 }},
             {tag: 'p', ref: 'sortedName', childs: (props: any) => this.genListName(props)}
         ]});
+        applyCSSList([this.mainPanel], css);
     }
 
     listaAction(props: any, add: boolean) {
@@ -46,3 +48,10 @@ export class NameSorterPage implements IPage {
     }
 
 }
+
+const css: CSSInfo[] = [
+    {selector: '*', display: 'block'},
+    {selector: 'button', width: '125px'},
+    {selector: 'input', width: '117px'},
+    {selector: 'input, button, p', margin: '7px 0'}
+];
