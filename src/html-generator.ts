@@ -19,13 +19,14 @@ export function genels(models: HTMLElementModel[]): HTMLElementModelProcessed[] 
 
 - Functions recebem o objeto modelo no parâmetro
 - Functions com nome iniciando com 'on' são eventListeners, com o evento na propriedade evt do modelo
+- Functions com nome iniciando com 'listen' são eventListeners controlados pelo código. São executados com model.events.fire('NomeEvento').
 - Demais functions são executadas e o retorno é atribuído ao elemento HTML
 */
 export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
     if (!model.tag) {
         let nullElm = document.createElement('div');
         nullElm.style.display = 'none';
-        return {...model, elm: nullElm, refs: {}};
+        return {...model, elm: nullElm, refs: {}, events: {fire: () => {}}};
     }
     let elm = document.createElement(model.tag);
     model.elm = elm;
@@ -33,6 +34,9 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
     let root = model.super || {};
     while (root.super) root = root.super;
     root.refs = root.refs || {};
+    root.listeners = root.listeners || [];
+    let fire = (name: string) => {fireListener(root.listeners, name, model)};
+    model.events = {fire};
     if (model.ref) {
         root.refs[model.ref] = elm;
     }
@@ -42,14 +46,19 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
             return;
         }
         let value = model[key];
-        if (!value || typeof value !== 'function') {
-            return;
-        }
+        if (!value || typeof value !== 'function') return;
         let evtName = key.substring(2);
         elm.addEventListener(evtName, evt => value({...model, evt}));
     });
     Object.keys(model).forEach(k => {
-        if (k.startsWith('on')) return;
+        if (!k.startsWith('listen')) return;
+        let value = model[k];
+        if (!value || typeof value !== 'function') return;
+        let name = k.substring(6);
+        root.listeners.push({name, callback: value});
+    });
+    Object.keys(model).forEach(k => {
+        if (k.startsWith('on') || k.startsWith('listen')) return;
         let v = model[k];
         if (v && typeof v === 'function') {
             v = v(model);
@@ -59,6 +68,7 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
     let elmValues = {};
     Object.keys(model).forEach(k => {
         if (k.startsWith('on')
+            || k.startsWith('listen')
             || k === 'tag' 
             || k === 'refs'
             || k === 'ref'
@@ -116,6 +126,19 @@ export function genChilds(elm: HTMLElement, models: ElementChildModel[]) {
     if (!elm || !models) return;
     removeChilds(elm);
     addChilds(elm, models);
+}
+
+function fireListener(listeners: {name: string, callback: Function}[], name: string, props: any) {
+    console.log(`firing ${name}`);
+    console.log('listeners: ', listeners);
+    listeners.filter(listener => listener.name === name)
+        .forEach(listener => {
+            try {
+                listener.callback(props);
+            } catch (e) {
+                console.log(`Error firing listener "${name}": `, e);
+            }
+        });
 }
 
 function applyValues(from: any, to: any) {

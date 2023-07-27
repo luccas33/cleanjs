@@ -66,6 +66,7 @@ export class MyPage implements IPage {
 
 - Functions recebem o objeto modelo no parâmetro.
 - Functions com nome iniciando com 'on' são eventListeners, com o evento na propriedade evt do modelo.
+- Functions com nome iniciando com 'listen' são eventListeners controlados pelo código. São executados com modelo.events.fire('NomeEvento').
 - Demais functions são executadas e o retorno é atribuído à propriedade em questão.
 
 #### Functions do Gerador:
@@ -77,7 +78,26 @@ export class MyPage implements IPage {
 - genChilds: retira os filhos do elemento e adiciona uma lista de filhos.
 - removeChilds: retira os filhos do elemento
 
-Fim!
+### Functions Listen:
+
+```Javascript
+
+let showDialog: false;
+
+let childs: [
+    {tag: 'button', textContent: 'Show Dialog', onclick: (props: any) => {
+            showDialog = true; 
+            props.events.fire('ToggleDialog');
+        }},
+    {tag: 'div', ref: 'dialog', listenToggleDialog: (props: any) => props.refs.dialog.hidden = !showDialog}
+]
+
+```
+
+Confira este exemplo de forma completa no arquivo pages/toggle-dialog-page.ts
+
+### Fim!
+
 Sim, o tutorial é só isso!
 
 ### Vamos a um código um pouco mais complexo
