@@ -1,5 +1,6 @@
 import { ElementChildModel, HTMLElementModel } from "./model/html-element-model";
 import { HTMLElementModelProcessed } from "./model/html-element-model-processed";
+import { IComponent } from "./model/icomponent";
 
 export function genels(models: HTMLElementModel[]): HTMLElementModelProcessed[] {
     return models.map(model => genel(model));
@@ -48,7 +49,7 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
         let value = model[key];
         if (!value || typeof value !== 'function') return;
         let evtName = key.substring(2);
-        elm.addEventListener(evtName, evt => value({...model, evt}));
+        elm.addEventListener(evtName, (evt: any) => value({...model, evt}));
     });
     Object.keys(model).forEach(k => {
         if (!k.startsWith('listen')) return;
@@ -106,8 +107,13 @@ export function removeChilds(elm: HTMLElement) {
         while (elm.firstChild) elm.removeChild(elm.firstChild);
 }
 
-export function addChild(elm: HTMLElement, model: ElementChildModel) {
+export function addChild(elm: HTMLElement, model: ElementChildModel | IComponent) {
     if (!elm || !model) return;
+    if ('mainPanel' in model && 'init' in model && typeof model.init === 'function') {
+        elm.append(model.mainPanel);
+        model.init();
+        return;
+    }
     elm.append(genel(model).elm);
 }
 
@@ -117,9 +123,9 @@ export function genChild(elm: HTMLElement, model: ElementChildModel) {
     addChilds(elm, [model]);
 }
 
-export function addChilds(elm: HTMLElement, models: ElementChildModel[]) {
+export function addChilds(elm: HTMLElement, models: (ElementChildModel | IComponent)[]) {
     if (!elm || !models) return;
-    models.forEach(model => elm.append(genel(model).elm));
+    models.forEach(model => addChild(elm, model));
 }
 
 export function genChilds(elm: HTMLElement, models: ElementChildModel[]) {
