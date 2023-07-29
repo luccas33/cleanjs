@@ -5,10 +5,13 @@ O framework JS mais limpo e leve de todos
 ## HTML em JS
 
 - Escreva HTML totalmente em Javascript.
-- Atualize o HTML quando quiser e sem hooks.
+- Atualize o HTML facilmente quando quiser e sem hooks.
 - Separe a view da lógica ou misture tudo. Você quem decide.
+- Apenas Javascript. Qualquer desenvolvedor JS pode utilizar prontamente.
 
-Exemplo de input de formulário:
+### Exemplo de input de formulário:
+
+O HTML é gerado a partir de um objeto modelo, como no exemplo a seguir.
 
 ```Javascript
 
@@ -21,9 +24,9 @@ Exemplo de input de formulário:
 
 ```
 
-### Tutorial
+### Tutorial do Gerador de HTML
 
-Tutorial do gerador de HTML (arquivo html-generator)
+As Functions do gerador estão no arquivo html-generator.
 
 #### Componentes
 
@@ -31,24 +34,60 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 
 ```Javascript
 export class MyComponent implements IComponent {
-    public readonly mainPanel = genel({tag: 'div'}).elm;
+    mainPanel = genel({tag: 'div'}).elm;
     init() {
         genChild(this.mainPanel, {tag: 'p', textContent: 'MyComponent works!'});
     }
 }
 ```
 
+Não é necessário criar uma classe para gerar um subcomponente. Simplesmente crie uma função que retorne um objeto modelo:
+
+```Javascript
+
+getInput(label: string, value: string, setter: Function) {
+    return {tag: 'div', className: 'form-input', childs: [
+        {tag: 'label', textContent: label},
+        {
+            tag: 'input', 
+            value: value, 
+            // Functions recebem o próprio objeto modelo em que estão inseridos e 'elm' é o elemento criado pelo modelo.
+            onchange: (p: any) => setter(p.elm.value),
+            // O evento é acessado pela propriedade 'evt' do modelo.
+            onkeyup: (p: any) => {if (p.evt.keyCode === 13) this.save()}
+        }
+    ]};
+}
+
+```
+
 Páginas devem implementar a interface IPage. É quase idêntica à IComponent, com uma propriedade a mais (pageCss), que é opcional.
 
 ```Javascript
 export class MyPage implements IPage {
-    public readonly mainPanel = genel({tag: 'div'}).elm;
-    public readonly pageCss = '/styles/my-page.css';
+    mainPanel = genel({tag: 'div'}).elm;
+    // Este arquivo CSS só estará ativo quando esta página estiver em exibição.
+    pageCss = '/styles/my-page.css';
+
+    /** 
+     * Crie seu modelo como propriedade da class.
+     * Assim, as functions podem acessá-lo diretamente.
+     * Isto facilita a modificação do HTML a partir de eventos.
+     */
+    model: HTMLElementModel = {tag: 'div', childs: [
+        // A propriedade 'ref' define uma variável para o elemento
+        {tag: 'h2', textContent: 'Hello World! Click me.', ref: 'title', onclick: () => this.click()},
+        // Um componente pode ser adicionado como filho de um objeto modelo.
+        new MyComponent()
+    ]}
+
     init() {
-        genChilds(this.mainPanel, childs: [
-            {tag: 'h2', textContent: 'Hello World!'},
-            new MyComponent()
-        ]);
+        genChild(this.mainPanel, model);
+    }
+
+    click() {
+        // Os elementos são acessados pelo objeto 'refs' do modelo
+        this.model.refs.title.textContent = 'Hello dev!';
     }
 }
 ```
@@ -85,11 +124,11 @@ export class MyPage implements IPage {
 let showDialog: false;
 
 let childs: [
-    {tag: 'button', textContent: 'Show Dialog', onclick: (props: any) => {
+    {tag: 'button', textContent: 'Show Dialog', onclick: (p: any) => {
             showDialog = true; 
-            props.events.fire('ToggleDialog');
+            p.events.fire('ToggleDialog');
         }},
-    {tag: 'div', ref: 'dialog', listenToggleDialog: (props: any) => props.refs.dialog.hidden = !showDialog}
+    {tag: 'div', ref: 'dialog', listenToggleDialog: (p: any) => p.refs.dialog.hidden = !showDialog}
 ]
 
 ```
@@ -100,48 +139,8 @@ Confira este exemplo de forma completa no arquivo pages/toggle-dialog-page.ts
 
 Sim, o tutorial é só isso!
 
-### Vamos a um código um pouco mais complexo
+> Quer um exemplo completo?
 
-Trecho de código de um sorteador de nomes.
-Adicione e remova nomes da lista e, por fim, sorteie um nome.
-
-Arquivo pages/name-sorter-page
-
-```Javascript
-
-init() {
-    genChild(this.mainPanel, {tag: 'div', childs: [
-        {tag: 'label', textContent: 'Digite um nome'},
-        {tag: 'input', ref: 'iptName'},
-        {tag: 'button', textContent: 'Adicionar à lista', onclick: (props: any) => this.listaAction(props, true)},
-        {tag: 'button', textContent: 'Retirar da lista', onclick: (props: any) => this.listaAction(props, false)},
-        {tag: 'div', ref: 'nameList'},
-        {tag: 'button', textContent: 'Sortear um nome',
-            onclick: (props: any) => {
-                let name = this.names[this.random(1, this.names.length) - 1];
-                props.refs.sortedName.textContent = `O nome sorteado é: ${name}`;
-            }},
-        {tag: 'p', ref: 'sortedName', childs: (props: any) => this.genListName(props)}
-    ]});
-}
-
-listaAction(props: any, add: boolean) {
-    let name = props.refs.iptName.value;
-    props.refs.iptName.value = '';
-    if (add) this.names.push(name);
-    if (!add) this.names = this.names.filter(n => n !== name);
-    this.genListName(props);
-}
-
-genListName(props: any) {
-    genChilds(props.refs.nameList, this.names.map(n => {
-        return {tag: 'p', textContent: n};
-    }));
-}
-
-```
-
-Quer um exemplo mais completo?
 Confira o CRUD na página Persons (arquivo pages/persons-page).
 
 # CSS em JS
@@ -150,16 +149,21 @@ Escreva CSS em Javascript
 
 ```Javascript
 const css: CSSInfo[] = [
-    {selector: '*', display: 'block'},
-    {selector: 'button', width: '125px'},
-    {selector: 'input', width: '117px'},
-    {selector: 'input, button, p', margin: '7px 0'}
+    {
+        // Seletor CSS
+        selector: '.form-input',
+        marginTop: '10px',
+        width: '100%',
+        // Estilos a serem aplicados às tags fihas de .form-input
+        styles: [
+            {selector: 'input', width: '100%'},
+            {selector: 'label, span', display: 'block'}
+        ]
+    }
 ];
 
 applyCSSList([this.mainPanel], css);
 ```
-
-Confira este exemplo no arquivo pages/name-sorter-page.ts
 
 # Rotas
 
@@ -229,7 +233,7 @@ const sizes2 = [
 
 ```Javascript
 
-// Chame esta função no seu main passando sua lista de tamanhos no parâmetro, ou não, para usar os tamanhos default.
+// Chame esta função no seu main passando sua lista de tamanhos no parâmetro, ou não, para usar os tamanhos default (sizes2).
 processFlexCSS(sizes);
 
 ```
