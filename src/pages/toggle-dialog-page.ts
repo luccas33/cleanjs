@@ -10,13 +10,16 @@ export class ToggleDialogPage implements IPage {
         genChild(this.mainPanel, {tag: 'div', childs: [
             {tag: 'button', textContent: 'Abrir Dialog', onclick: (props: any) => {
                 this.showDialog = true;
-                props.events.fire('ToggleDialog');
+                props.events.fire('ToggleDialog', 'Dialog Aberto!');
             }},
             {tag: 'div', className: 'dialog-container', childs: [
                 {tag: 'div', className: 'dialog', hidden: !this.showDialog, ref: 'dialog', 
-                listenToggleDialog: (props: any) => props.refs.dialog.hidden = !this.showDialog,
+                    listenToggleDialog: (props: any) => {
+                        props.refs.dialog.hidden = !this.showDialog;
+                        props.refs.dialogTitle.textContent = props.evt;
+                    },
                 childs: [
-                    {tag: 'h3', textContent: 'Dialog Aberto'},
+                    {tag: 'h3', textContent: 'Dialog Title', ref: 'dialogTitle'},
                     {tag: 'button', textContent: 'Fechar Dialog', onclick: (props: any) => {
                         this.showDialog = false;
                         props.events.fire('ToggleDialog');

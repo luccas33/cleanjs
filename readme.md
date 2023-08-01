@@ -34,8 +34,15 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 
 ```Javascript
 export class MyComponent implements IComponent {
+    /**
+     * genel(): gera um elemento HTML a partir de um objeto modelo.
+     * tag: nome da tag.
+     * elm: elemento HTML gerado.
+     */
     mainPanel = genel({tag: 'div'}).elm;
     init() {
+        // genChild(): gera um elemento HTML filho.
+        // textContent: uma propriedade qualquer de um elemento HTML.
         genChild(this.mainPanel, {tag: 'p', textContent: 'MyComponent works!'});
     }
 }
@@ -46,6 +53,7 @@ Não é necessário criar uma classe para gerar um subcomponente. Simplesmente c
 ```Javascript
 
 getInput(label: string, value: string, setter: Function) {
+    // childs: tags filhas de um elemento.
     return {tag: 'div', className: 'form-input', childs: [
         {tag: 'label', textContent: label},
         {
@@ -121,15 +129,24 @@ export class MyPage implements IPage {
 
 ```Javascript
 
-let showDialog: false;
+showDialog = false;
 
-let childs: [
-    {tag: 'button', textContent: 'Show Dialog', onclick: (p: any) => {
-            showDialog = true; 
-            p.events.fire('ToggleDialog');
-        }},
-    {tag: 'div', ref: 'dialog', listenToggleDialog: (p: any) => p.refs.dialog.hidden = !showDialog}
-]
+model = {tag: 'div', childs: [
+        {tag: 'button', textContent: 'Show Dialog', onclick: (p: any) => {
+                showDialog = true; 
+                // O primeiro parâmetro é o nome do evento.
+                // O segundo parâmetro é opcional e de qualquer tipo.
+                p.events.fire('ToggleDialog', 'Hello Dialog!');
+            }},
+        // Este elemento escutará eventos com nome 'ToggleDialog'
+        {tag: 'div', ref: 'dialog', listenToggleDialog: (p: any) => {
+                p.refs.dialog.hidden = !showDialog;
+                // O segundo parâmetro de fire() é acessado na propriedade 'evt':
+                p.refs.dialogTitle.innerText = p.evt;
+            }, childs: [
+                {tag: 'h3', innerText: 'Dialog Title', ref: 'dialogTitle'}
+            ]}
+        ]}
 
 ```
 
@@ -245,12 +262,16 @@ Controle o fluxo entre os componentes diretamente, sem se preocupar com a hierar
 
 ```Javascript
 
-// Função adicionada para ser executada pelo nome
-appEvents.add('eventName', () => alert('Evento executou'));
+// Function adicionada para ser executada pelo nome.
+appEvents.add('eventName', (evt: string) => alert(evt));
 
 
-// Função executada a partir de outro componente:
-appEvents.exec('eventName');
+/** 
+ * Function executada a partir de outro local no código.
+ * Primeiro parâmetro: nome do evento a ser executado.
+ * Segundo parâmetro: um dado qualquer (opcional) que é passado como parâmetro à Function a ser executada.
+ */
+appEvents.exec('eventName', 'Executando o evento');
 
 ```
 

@@ -22,7 +22,7 @@ function add(name: string, func: Function) {
 /**
  * Executa as functions adicionadas com o name
 */
-function exec(name: string) {
+function exec(name: string, evtData?: any) {
     if (!name) {
         return;
     }
@@ -32,7 +32,7 @@ function exec(name: string) {
     }
     group.events.forEach(evt => {
         try {
-            evt();
+            evt(evtData);
         } catch(e) {
             console.log(`Error on ${name} event: `, e);
         }

@@ -36,7 +36,7 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
     while (root.super) root = root.super;
     root.refs = root.refs || {};
     root.listeners = root.listeners || [];
-    let fire = (name: string) => {fireListener(root.listeners, name, model)};
+    let fire = (name: string, evt?: any) => {fireListener(root.listeners, name, {...model, evt})};
     model.events = {fire};
     if (model.ref) {
         root.refs[model.ref] = elm;
