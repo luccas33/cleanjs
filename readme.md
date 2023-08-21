@@ -253,6 +253,13 @@ const sizes2 = [
 // Chame esta função no seu main passando sua lista de tamanhos no parâmetro, ou não, para usar os tamanhos default (sizes2).
 processFlexCSS(sizes);
 
+/**
+ * O FlexCSS executa automaticamente apenas quando detecta uma alteração na largura da tela.
+ * Caso tenha alguma alteração no HTML que seja necessario executar o FlexCSS, chame esta Function.
+ * Casos de uso comuns: troca de página e abertura de dialog.
+*/
+resetFlexCSS();
+
 ```
 Confira um exemplo de responsividade no arquivo pages/flex-css-page.ts
 
