@@ -152,6 +152,40 @@ model = {tag: 'div', childs: [
 
 Confira este exemplo de forma completa no arquivo pages/toggle-dialog-page.ts
 
+#### Element Setters
+
+```Javascript
+
+names = ['Name 1', 'Mame 2', 'Name 3'];
+
+/** 
+ * Objeto de contexto
+ * 
+ * Serve para compartilhar o acesso a refs e eventos listen
+*/ 
+context = {};
+
+// Parâmetros: contexto, ref do elemento, propriedade do elemento, valor inicial (opcional)
+setName = getSetter(this.context, 'name', 'textContent', 'Initial Value');
+
+// Propriedade childs gera o HTML novamente (equivalente a chamar genChilds())
+setNameList = getSetter(this.context, 'nameList', 'childs', this.getNameListModel());
+
+// Atribua o objeto de contexto à propriedade super
+model = {tag: 'div', super: this.context, childs: [
+    {tag: 'input', ref: 'name'},
+    {tag: 'div', ref: 'listName'}
+]}
+
+addName(name) {
+    this.names.push(name);
+
+    // Atualize o valor do elemento passando apenas o valor da propriedade
+    this.setNameList(this.getNameListModel());
+}
+
+```
+
 ### Fim!
 
 Sim, o tutorial é só isso!

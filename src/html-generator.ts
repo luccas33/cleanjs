@@ -80,6 +80,9 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
         setValue(elmValues, k, model[k])
     });
     applyValues(elmValues, elm);
+    if (root.runOnInit && Array.isArray(root.runOnInit)) {
+        root.runOnInit.forEach((run: any) => run());
+    }
     model.childs = model.childs || [];
     model.childs = Array.isArray(model.childs) ? model.childs : [model.childs];
     model.childs.forEach((c: any) => {
@@ -132,6 +135,31 @@ export function genChilds(elm: HTMLElement, models: ElementChildModel[]) {
     if (!elm || !models) return;
     removeChilds(elm);
     addChilds(elm, models);
+}
+
+export function getSetter(model: HTMLElementModel, ref: string, key: string, initVal?: any) {
+    let setter = (val: any) => {
+        try {
+            let root = model;
+            while(root.super) root = root.super;
+            let elm = root.refs[ref];
+            if (!elm) return;
+            if ('childs' === key) {
+                val = Array.isArray(val) ? val : [val];
+                genChilds(elm, val);
+                return;
+            }
+            elm[key] = val;
+        } catch(ignore){}
+    };
+    if (initVal) {
+        model.super = model.super || {};
+        let root = model.super;
+        while (root.super) root = root.super;
+        root.runOnInit = root.runOnInit || [];
+        root.runOnInit.push(() => setter(initVal));
+    }
+    return setter;
 }
 
 function fireListener(listeners: {name: string, callback: Function}[], name: string, props: any) {
