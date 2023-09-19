@@ -295,6 +295,19 @@ processFlexCSS(sizes);
 resetFlexCSS();
 
 ```
+
+### Auto Complete de Prefixo
+
+```Javascript
+{tag: 'div', className: 'fx-xs-m-xl-classname'}
+
+// É o mesmo que:
+
+{tag: 'div', className: 'classname xs-classname m-classname xl-classname'}
+```
+
+### Quer um Exemplo?
+
 Confira um exemplo de responsividade no arquivo pages/flex-css-page.ts
 
 # Eventos JS

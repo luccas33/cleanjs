@@ -10,9 +10,14 @@ const defaultSizes: FlexCSSType[] = [
 ];
 
 let lastSizePrefix = '';
+let flexPrefix = 'fx-';
 
 export function resetFlexCSS() {
     lastSizePrefix = '';
+}
+
+export function setFlexPrefix(prefix: string) {
+    flexPrefix = prefix;
 }
 
 export function processFlexCSS(sizes = defaultSizes) {
@@ -47,6 +52,7 @@ function applyFlexCSS(sizes: FlexCSSType[], prefix: string, element: HTMLElement
 
     let classList: string[] = [];
     element.classList.forEach(c => classList.push(c));
+    classList = completePrefixes(sizes, classList);
 
     // Recupera as classes removidas
     let classesToAdd: string[] = [];
@@ -120,4 +126,25 @@ function getClassesToRemove(sizes: FlexCSSType[], prefix: string, classes: strin
     });
 
     return classesToRemove;
+}
+
+function completePrefixes(sizes: FlexCSSType[], classes: string[]) {
+    sizes.sort((s1, s2) => s1.minSize - s2.minSize);
+    let newClasses: string[] = [];
+    classes.forEach(clazz => {
+        if (!clazz.startsWith(flexPrefix)) {
+            newClasses.push(clazz);
+            return;
+        }
+        clazz = clazz.substring(flexPrefix.length);
+        let sizesToComplete: string[] = [];
+        sizes.forEach(size => {
+            if (!clazz.startsWith(size.prefix)) return;
+            sizesToComplete.push(size.prefix);
+            clazz = clazz.substring(size.prefix.length);
+        });
+        newClasses.push(clazz);
+        sizesToComplete.forEach(size => newClasses.push(size + clazz));
+    });
+    return newClasses;
 }
