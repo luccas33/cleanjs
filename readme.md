@@ -34,6 +34,18 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 
 ```Javascript
 export class MyComponent implements IComponent {
+    css = `
+        p {
+            color: black;
+            font-size: 20px;
+        }
+    `;
+
+    constructor() {
+        // Registre o CSS do componente
+        addComponentCSS(css);
+    }
+
     /**
      * genel(): gera um elemento HTML a partir de um objeto modelo.
      * tag: nome da tag.

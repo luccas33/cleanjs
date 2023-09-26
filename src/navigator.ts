@@ -11,7 +11,9 @@ const notFoundPage: HTMLElementModel = {
     childs: [{tag: 'h1', textContent: 'Page not found!'}]
 };
 
-const generatedPages: {path: string, page: IPage}[] = [];
+const generatedPages: {path: string, page: IPage, componentsCSS: string[]}[] = [];
+
+let componentsCSS: string[] = [];
 
 export function restorePage() {
     let params = (new URL(document.location.href)).searchParams;
@@ -27,8 +29,8 @@ export function navToPage(pagePath: string) {
     pagePath = pagePath ? pagePath.trim() : '';
     sessionStorage.setItem('path', pagePath);
 
-    let page = getPageByPath(pagePath);
     let header = new HeaderComp();
+    let page = getPageByPath(pagePath);
 
     let pageCss = document.getElementById('page-css');
     if (pageCss) {
@@ -41,6 +43,8 @@ export function navToPage(pagePath: string) {
 
     document.body.innerHTML = '';
     
+    genComponentsCSS();
+    
     document.body.append(header.mainPanel);
     header.init();
  
@@ -48,6 +52,26 @@ export function navToPage(pagePath: string) {
     page.init();
 
     resetFlexCSS();
+
+    componentsCSS = [];
+}
+
+export function addComponentCSS(css: string) {
+    if (!css) return;
+    componentsCSS.push(css);
+}
+
+function genComponentsCSS() {
+    let compStyles = document.getElementById('compStyles');
+    if (compStyles) {
+        document.head.removeChild(compStyles);
+    }
+
+    let pagePath = sessionStorage.getItem('path');
+    let generatedPage = generatedPages.find(p => p.path === pagePath);
+    if (!generatedPage) return;
+    compStyles = genel({tag: 'style', id: 'compStyles', textContent: generatedPage.componentsCSS.join('\n\n')}).elm;
+    document.head.append(compStyles);
 }
 
 function getPageByPath(path: string): IPage {
@@ -68,8 +92,11 @@ function getPageByPath(path: string): IPage {
 
 function generatePage(rote: IRote) {
     let generatedPage = generatedPages.find(p => p.path === rote.path);
-    if (generatedPage) return generatedPage.page;
+    if (generatedPage) {
+        componentsCSS = generatedPage.componentsCSS;    
+        return generatedPage.page
+    }
     let page = rote.createPage();
-    generatedPages.push({path: rote.path, page});
+    generatedPages.push({path: rote.path, page, componentsCSS});
     return page;
 }

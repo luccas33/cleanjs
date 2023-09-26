@@ -163,8 +163,6 @@ export function getSetter(model: HTMLElementModel, ref: string, key: string, ini
 }
 
 function fireListener(listeners: {name: string, callback: Function}[], name: string, props: any) {
-    console.log(`firing ${name}`);
-    console.log('listeners: ', listeners);
     listeners.filter(listener => listener.name === name)
         .forEach(listener => {
             try {
