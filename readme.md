@@ -34,16 +34,18 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 
 ```Javascript
 export class MyComponent implements IComponent {
-    css = `
-        p {
-            color: black;
-            font-size: 20px;
-        }
-    `;
+    getCss() { 
+        return `
+            p {
+                color: ${getTheme().fontColor};
+                font-size: 20px;
+            }
+        `;
+    }
 
     constructor() {
         // Registre o CSS do componente
-        addComponentCSS(css);
+        addComponentCSS(this.getCss);
     }
 
     /**
@@ -56,6 +58,11 @@ export class MyComponent implements IComponent {
         // genChild(): gera um elemento HTML filho.
         // textContent: uma propriedade qualquer de um elemento HTML.
         genChild(this.mainPanel, {tag: 'p', textContent: 'MyComponent works!'});
+    }
+
+    onCSSChange() {
+        // Chame essa função para atualizar o CSS dos componentes caso seja alterado dinamicamente
+        genComponentsCSS();
     }
 }
 ```

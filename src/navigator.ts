@@ -11,9 +11,9 @@ const notFoundPage: HTMLElementModel = {
     childs: [{tag: 'h1', textContent: 'Page not found!'}]
 };
 
-const generatedPages: {path: string, page: IPage, componentsCSS: string[]}[] = [];
+const generatedPages: {path: string, page: IPage, componentsCSS: Function[]}[] = [];
 
-let componentsCSS: string[] = [];
+let componentsCSS: Function[] = [];
 
 export function restorePage() {
     let params = (new URL(document.location.href)).searchParams;
@@ -26,7 +26,7 @@ export function restorePage() {
 }
 
 export function navToPage(pagePath: string) {
-    pagePath = pagePath ? pagePath.trim() : '';
+    pagePath = !pagePath || pagePath.trim() == '' ? 'home' : pagePath.trim();
     sessionStorage.setItem('path', pagePath);
 
     let header = new HeaderComp();
@@ -56,12 +56,12 @@ export function navToPage(pagePath: string) {
     componentsCSS = [];
 }
 
-export function addComponentCSS(css: string) {
+export function addComponentCSS(css: Function) {
     if (!css) return;
     componentsCSS.push(css);
 }
 
-function genComponentsCSS() {
+export function genComponentsCSS() {
     let compStyles = document.getElementById('compStyles');
     if (compStyles) {
         document.head.removeChild(compStyles);
@@ -70,7 +70,8 @@ function genComponentsCSS() {
     let pagePath = sessionStorage.getItem('path');
     let generatedPage = generatedPages.find(p => p.path === pagePath);
     if (!generatedPage) return;
-    compStyles = genel({tag: 'style', id: 'compStyles', textContent: generatedPage.componentsCSS.join('\n\n')}).elm;
+    let cssTxtList = generatedPage.componentsCSS.map(genCss => genCss());
+    compStyles = genel({tag: 'style', id: 'compStyles', textContent: cssTxtList.join('\n\n')}).elm;
     document.head.append(compStyles);
 }
 
