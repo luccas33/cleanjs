@@ -11,10 +11,12 @@ const notFoundPage: HTMLElementModel = {
     childs: [{tag: 'h1', textContent: 'Page not found!'}]
 };
 
-const generatedPages: {path: string, page: IPage, componentsCSS: Function[]}[] = [];
+type ComponentCss = {mainClass: string, getCss: Function};
+
+const generatedPages: {path: string, page: IPage, componentsCSS: ComponentCss[]}[] = [];
 let header: HeaderComp | undefined;
 
-let componentsCSS: Function[] = [];
+let componentsCSS: ComponentCss[] = [];
 let globalCSS: Function[] = [];
 
 export function restorePage() {
@@ -58,9 +60,9 @@ export function navToPage(pagePath: string) {
     componentsCSS = [];
 }
 
-export function addComponentCSS(css: Function) {
-    if (!css) return;
-    componentsCSS.push(css);
+export function addComponentCSS(getCss: Function, mainClass = '') {
+    if (!getCss) return;
+    componentsCSS.push({getCss, mainClass});
 }
 
 export function addGlobalCSS(css: Function) {
@@ -77,9 +79,9 @@ export function genComponentsCSS() {
     let pagePath = sessionStorage.getItem('path');
     let generatedPage = generatedPages.find(p => p.path === pagePath);
     if (!generatedPage) return;
-    let cssFunctions = [...generatedPage.componentsCSS, ...globalCSS];
-    let cssTxtList = cssFunctions.map(genCss => genCss());
-    compStyles = genel({tag: 'style', id: 'compStyles', textContent: cssTxtList.join('\n\n')}).elm;
+    let cssList = generatedPage.componentsCSS.map(cs => processCss(cs.getCss(), cs.mainClass));
+    cssList = [...globalCSS.map(gcss => gcss()), ...cssList];
+    compStyles = genel({tag: 'style', id: 'compStyles', textContent: cssList.join('\n\n')}).elm;
     document.head.append(compStyles);
 }
 
@@ -108,4 +110,11 @@ function generatePage(rote: IRote) {
     let page = rote.createPage();
     generatedPages.push({path: rote.path, page, componentsCSS});
     return page;
+}
+
+function processCss(css: string, mainClass: string) {
+    return css.split('}')
+        .filter(e => e.trim().length > 0)
+        .map(e => `.${mainClass} ${(e + '}').trim()}`)
+        .join('\n');
 }
