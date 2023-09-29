@@ -12,8 +12,10 @@ const notFoundPage: HTMLElementModel = {
 };
 
 const generatedPages: {path: string, page: IPage, componentsCSS: Function[]}[] = [];
+let header: HeaderComp | undefined;
 
 let componentsCSS: Function[] = [];
+let globalCSS: Function[] = [];
 
 export function restorePage() {
     let params = (new URL(document.location.href)).searchParams;
@@ -29,7 +31,7 @@ export function navToPage(pagePath: string) {
     pagePath = !pagePath || pagePath.trim() == '' ? 'home' : pagePath.trim();
     sessionStorage.setItem('path', pagePath);
 
-    let header = new HeaderComp();
+    header = header || new HeaderComp();
     let page = getPageByPath(pagePath);
 
     let pageCss = document.getElementById('page-css');
@@ -61,6 +63,11 @@ export function addComponentCSS(css: Function) {
     componentsCSS.push(css);
 }
 
+export function addGlobalCSS(css: Function) {
+    if (!css) return;
+    globalCSS.push(css);
+}
+
 export function genComponentsCSS() {
     let compStyles = document.getElementById('compStyles');
     if (compStyles) {
@@ -70,7 +77,8 @@ export function genComponentsCSS() {
     let pagePath = sessionStorage.getItem('path');
     let generatedPage = generatedPages.find(p => p.path === pagePath);
     if (!generatedPage) return;
-    let cssTxtList = generatedPage.componentsCSS.map(genCss => genCss());
+    let cssFunctions = [...generatedPage.componentsCSS, ...globalCSS];
+    let cssTxtList = cssFunctions.map(genCss => genCss());
     compStyles = genel({tag: 'style', id: 'compStyles', textContent: cssTxtList.join('\n\n')}).elm;
     document.head.append(compStyles);
 }
