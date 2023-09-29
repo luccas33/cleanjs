@@ -18,6 +18,7 @@ let header: HeaderComp | undefined;
 
 let componentsCSS: ComponentCss[] = [];
 let globalCSS: Function[] = [];
+let globalCSSGenerated = false;
 
 export function restorePage() {
     let params = (new URL(document.location.href)).searchParams;
@@ -33,7 +34,10 @@ export function navToPage(pagePath: string) {
     pagePath = !pagePath || pagePath.trim() == '' ? 'home' : pagePath.trim();
     sessionStorage.setItem('path', pagePath);
 
-    header = header || new HeaderComp();
+    if (!header) {
+        header = new HeaderComp();
+        header.init();
+    }
     let page = getPageByPath(pagePath);
 
     let pageCss = document.getElementById('page-css');
@@ -47,6 +51,10 @@ export function navToPage(pagePath: string) {
 
     document.body.innerHTML = '';
     
+    if (!globalCSSGenerated) {
+        genGlobalCSS();
+        globalCSSGenerated = true;
+    }
     genComponentsCSS();
     
     document.body.append(header.mainPanel);
@@ -71,18 +79,54 @@ export function addGlobalCSS(css: Function) {
 }
 
 export function genComponentsCSS() {
-    let compStyles = document.getElementById('compStyles');
-    if (compStyles) {
-        document.head.removeChild(compStyles);
-    }
-
     let pagePath = sessionStorage.getItem('path');
     let generatedPage = generatedPages.find(p => p.path === pagePath);
     if (!generatedPage) return;
-    let cssList = generatedPage.componentsCSS.map(cs => processCss(cs.getCss(), cs.mainClass));
-    cssList = [...globalCSS.map(gcss => gcss()), ...cssList];
-    compStyles = genel({tag: 'style', id: 'compStyles', textContent: cssList.join('\n\n')}).elm;
-    document.head.append(compStyles);
+
+    let currentStyles: string[] = [];
+    document.head.querySelectorAll('style').forEach(style => currentStyles.push(style.id));
+    currentStyles = currentStyles.filter(current => current !== 'global_style');
+    let pageStyles = generatedPage.componentsCSS.map(cs => `comp_style_${cs.mainClass}`);
+    let stylesToRemove = currentStyles.filter(cs => !pageStyles.find(ps => cs == ps));
+    let stylesToAdd = pageStyles.filter(ps => !currentStyles.find(cs => ps == cs));
+
+    let tagStylesToAdd = generatedPage.componentsCSS.filter(cs => stylesToAdd.find(sta => sta == `comp_style_${cs.mainClass}`))
+        .map(cs => { 
+            return genel({tag: 'style', id: `comp_style_${cs.mainClass}`, textContent: processCss(cs.getCss(), cs.mainClass)}).elm;
+        });
+    
+    stylesToRemove.forEach(str => document.head.removeChild(document.getElementById(str)!));
+    tagStylesToAdd.forEach(style => document.head.append(style));
+}
+
+export function genComponentCSS(mainClass: string) {
+    let pagePath = sessionStorage.getItem('path');
+    let generatedPage = generatedPages.find(p => p.path === pagePath);
+    if (!generatedPage) return;
+
+    let compCss = generatedPage.componentsCSS.find(cs => cs.mainClass === mainClass);
+    if (!compCss) return;
+
+    let id = `comp_style_${mainClass}`;
+    let style = genel({tag: 'style', id, textContent: processCss(compCss.getCss(), mainClass)}).elm;
+
+    let current = document.getElementById(id);
+    if (current) {
+        document.head.removeChild(current);
+    }
+    document.head.append(style);
+}
+
+export function genGlobalCSS() {
+    let css = globalCSS.map(gcss => gcss()).join('\n');
+    let global = genel({tag: 'style', id: 'global_style', textContent: css}).elm;
+
+    let current = document.getElementById('global_style');
+    if (current) {
+        document.head.removeChild(current);
+    }
+
+    document.head.appendChild(global);
 }
 
 function getPageByPath(path: string): IPage {
@@ -113,8 +157,17 @@ function generatePage(rote: IRote) {
 }
 
 function processCss(css: string, mainClass: string) {
+    mainClass = '.' + mainClass;
     return css.split('}')
-        .filter(e => e.trim().length > 0)
-        .map(e => `.${mainClass} ${(e + '}').trim()}`)
+        .filter(block => block.trim().length > 0)
+        .map(block => {
+            let selector = block.split('{')[0];
+            let body = block.split('{')[1];
+            selector = selector.split(',')
+                .filter(s => s.trim().length > 0)
+                .map(s => s.trim() == mainClass ? s : `${mainClass} ${s.trim()}`)
+                .join(', ');
+            return ` ${selector} { ${body} } `;
+        })
         .join('\n');
 }

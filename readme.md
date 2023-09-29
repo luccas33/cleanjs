@@ -63,8 +63,8 @@ export class MyComponent implements IComponent {
     }
 
     onCSSChange() {
-        // Chame essa função para atualizar o CSS dos componentes caso seja alterado dinamicamente
-        genComponentsCSS();
+        // Chame essa função para atualizar o CSS do componente caso seja alterado dinamicamente
+        genComponentCSS(this.mainClass);
     }
 
 }
