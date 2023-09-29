@@ -34,6 +34,25 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 
 ```Javascript
 export class MyComponent implements IComponent {
+    constructor() {
+        // Registre o CSS do componente
+        addComponentCSS(this.getCss, this.mainClass);
+    }
+
+    mainClass = 'my-component';
+
+    /**
+     * genel(): gera um elemento HTML a partir de um objeto modelo.
+     * tag: nome da tag.
+     * elm: elemento HTML gerado.
+     */
+    mainPanel = genel({tag: 'div', className: this.mainClass}).elm;
+    init() {
+        // genChild(): gera um elemento HTML filho.
+        // textContent: uma propriedade qualquer de um elemento HTML.
+        genChild(this.mainPanel, {tag: 'p', textContent: 'MyComponent works!'});
+    }
+
     getCss() { 
         return `
             p {
@@ -43,27 +62,11 @@ export class MyComponent implements IComponent {
         `;
     }
 
-    constructor() {
-        // Registre o CSS do componente
-        addComponentCSS(this.getCss);
-    }
-
-    /**
-     * genel(): gera um elemento HTML a partir de um objeto modelo.
-     * tag: nome da tag.
-     * elm: elemento HTML gerado.
-     */
-    mainPanel = genel({tag: 'div'}).elm;
-    init() {
-        // genChild(): gera um elemento HTML filho.
-        // textContent: uma propriedade qualquer de um elemento HTML.
-        genChild(this.mainPanel, {tag: 'p', textContent: 'MyComponent works!'});
-    }
-
     onCSSChange() {
         // Chame essa função para atualizar o CSS dos componentes caso seja alterado dinamicamente
         genComponentsCSS();
     }
+
 }
 ```
 
@@ -117,6 +120,20 @@ export class MyPage implements IPage {
         this.model.refs.title.textContent = 'Hello dev!';
     }
 }
+```
+
+### CSS global em template string:
+
+```Javascript
+genGlobalCss() {
+    return `
+        body {
+            background: ${getTheme().backgroundColor}
+        }
+    `;
+}
+
+addGlobalCSS(genGlobalCss)
 ```
 
 #### Propriedades do Modelo:
