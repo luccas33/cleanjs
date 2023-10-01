@@ -66,8 +66,9 @@ export function navToPage(pagePath: string) {
     componentsCSS = [];
 }
 
-export function addComponentCSS(getCss: Function, mainClass = '') {
-    if (!getCss) return;
+export function addComponentCSS(getCss: Function, mainClass: string) {
+    if (!getCss || !mainClass) return;
+    if (componentsCSS.find(ccss => ccss.mainClass == mainClass)) return;
     componentsCSS.push({getCss, mainClass});
 }
 
