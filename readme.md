@@ -125,7 +125,7 @@ export class MyPage implements IPage {
 ### CSS global em template string:
 
 ```Javascript
-genGlobalCss() {
+getGlobalCss() {
     return `
         body {
             background: ${getTheme().backgroundColor}
@@ -133,7 +133,12 @@ genGlobalCss() {
     `;
 }
 
-addGlobalCSS(genGlobalCss)
+// Registre a função de CSS global
+addGlobalCSS(getGlobalCss);
+
+// Gere novamente o CSS (em caso de mudança de tema, por exemplo)
+genGlobalCSS();
+genComponentsCSS(true);
 ```
 
 #### Propriedades do Modelo:

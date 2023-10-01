@@ -39,6 +39,7 @@ export function navToPage(pagePath: string) {
         header.init();
     }
     let page = getPageByPath(pagePath);
+    page.init();
 
     let pageCss = document.getElementById('page-css');
     if (pageCss) {
@@ -49,19 +50,16 @@ export function navToPage(pagePath: string) {
         document.head.append(pageCss);
     }
 
-    document.body.innerHTML = '';
     
     if (!globalCSSGenerated) {
         genGlobalCSS();
         globalCSSGenerated = true;
     }
     genComponentsCSS();
-    
+
+    document.body.innerHTML = '';
     document.body.append(header.mainPanel);
-    header.init();
- 
     document.body.append(page.mainPanel);
-    page.init();
 
     resetFlexCSS();
 
@@ -78,7 +76,7 @@ export function addGlobalCSS(css: Function) {
     globalCSS.push(css);
 }
 
-export function genComponentsCSS() {
+export function genComponentsCSS(reset = false) {
     let pagePath = sessionStorage.getItem('path');
     let generatedPage = generatedPages.find(p => p.path === pagePath);
     if (!generatedPage) return;
@@ -88,6 +86,10 @@ export function genComponentsCSS() {
     currentStyles = currentStyles.filter(current => current !== 'global_style');
     let pageStyles = generatedPage.componentsCSS.map(cs => `comp_style_${cs.mainClass}`);
     let stylesToRemove = currentStyles.filter(cs => !pageStyles.find(ps => cs == ps));
+    if (reset) {
+        stylesToRemove = currentStyles;
+        currentStyles = [];
+    }
     let stylesToAdd = pageStyles.filter(ps => !currentStyles.find(cs => ps == cs));
 
     let tagStylesToAdd = generatedPage.componentsCSS.filter(cs => stylesToAdd.find(sta => sta == `comp_style_${cs.mainClass}`))
