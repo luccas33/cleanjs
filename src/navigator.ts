@@ -31,6 +31,8 @@ export function restorePage() {
 }
 
 export function navToPage(pagePath: string) {
+    componentsCSS = [];
+
     pagePath = !pagePath || pagePath.trim() == '' ? 'home' : pagePath.trim();
     sessionStorage.setItem('path', pagePath);
 
@@ -62,8 +64,6 @@ export function navToPage(pagePath: string) {
     document.body.append(page.mainPanel);
 
     resetFlexCSS();
-
-    componentsCSS = [];
 }
 
 export function addComponentCSS(getCss: Function, mainClass: string) {
