@@ -80,6 +80,9 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
         setValue(elmValues, k, model[k])
     });
     applyValues(elmValues, elm);
+    if (model.mainClass) {
+        elm.classList.add(model.mainClass);
+    }
     if (root.runOnInit && Array.isArray(root.runOnInit)) {
         root.runOnInit.forEach((run: any) => run());
     }
@@ -89,6 +92,9 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
         if (typeof c === 'function') {
             c = c(model);
         }
+        if (!c) {
+            return;
+        }
         if ('tagName' in c) {
             elm.append(c);
             return;
@@ -97,6 +103,9 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
             elm.append(c.mainPanel);
             c.init();
             return;
+        }
+        if (model.mainClass) {
+            c.mainClass = model.mainClass;
         }
         c.super = model;
         genel(c);

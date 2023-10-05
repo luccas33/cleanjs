@@ -168,8 +168,12 @@ function processCss(css: string, mainClass: string) {
             let body = block.split('{')[1];
             selector = selector.split(',')
                 .filter(s => s.trim().length > 0)
-                .map(s => s.trim() == mainClass ? s : `${mainClass} ${s.trim()}`)
-                .join(', ');
+                .map(s => {
+                    if (s.trim() == mainClass) return s;
+                    let sArr = s.split(' ').filter(se => se.trim().length > 0);
+                    sArr[0] += mainClass;
+                    return sArr.join(' ');
+                }).join(', ');
             return ` ${selector} { ${body} } `;
         })
         .join('\n');

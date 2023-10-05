@@ -35,22 +35,37 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 ```Javascript
 export class MyComponent implements IComponent {
     constructor() {
-        // Registre o CSS do componente
-        addComponentCSS(this.getCss, this.mainClass);
+        /* 
+         * Registre o CSS do componente
+         * A mainClass é responsável por isolar o CSS do componente
+         */
+        addComponentCSS(this.getCss, this.model.mainClass);
     }
 
-    mainClass = 'my-component';
-
-    /**
+    /*
      * genel(): gera um elemento HTML a partir de um objeto modelo.
      * tag: nome da tag.
      * elm: elemento HTML gerado.
      */
-    mainPanel = genel({tag: 'div', className: this.mainClass}).elm;
+    mainPanel = genel({tag: 'div'}).elm;
+
+    /** 
+     * Crie seu modelo como propriedade da class.
+     * Assim, as functions podem acessá-lo diretamente.
+     * Isto facilita a modificação do HTML a partir de eventos.
+     */
+    model: HTMLElementModel = {
+        tag: 'div',
+        mainClass: 'my-component',
+        childs: [{tag: 'p', textContent: 'MyComponent works!'}]
+    }
+
     init() {
-        // genChild(): gera um elemento HTML filho.
-        // textContent: uma propriedade qualquer de um elemento HTML.
-        genChild(this.mainPanel, {tag: 'p', textContent: 'MyComponent works!'});
+        /* 
+         * genChild(): gera um elemento HTML filho.
+         * textContent: uma propriedade qualquer de um elemento HTML.
+         */
+        genChild(this.mainPanel, this.model);
     }
 
     getCss() { 
@@ -64,7 +79,7 @@ export class MyComponent implements IComponent {
 
     onCSSChange() {
         // Chame essa função para atualizar o CSS do componente caso seja alterado dinamicamente
-        genComponentCSS(this.mainClass);
+        genComponentCSS(this.model.mainClass);
     }
 
 }
@@ -99,11 +114,6 @@ export class MyPage implements IPage {
     // Este arquivo CSS só estará ativo quando esta página estiver em exibição.
     pageCss = '/styles/my-page.css';
 
-    /** 
-     * Crie seu modelo como propriedade da class.
-     * Assim, as functions podem acessá-lo diretamente.
-     * Isto facilita a modificação do HTML a partir de eventos.
-     */
     model: HTMLElementModel = {tag: 'div', childs: [
         // A propriedade 'ref' define uma variável para o elemento
         {tag: 'h2', textContent: 'Hello World! Click me.', ref: 'title', onclick: () => this.click()},
