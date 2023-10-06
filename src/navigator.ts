@@ -169,8 +169,8 @@ function processCss(css: string, mainClass: string) {
             selector = selector.split(',')
                 .filter(s => s.trim().length > 0)
                 .map(s => {
-                    if (s.trim() == mainClass) return s;
                     let sArr = s.split(' ').filter(se => se.trim().length > 0);
+                    if (sArr[0] == mainClass) return s;
                     sArr[0] += mainClass;
                     return sArr.join(' ');
                 }).join(', ');
