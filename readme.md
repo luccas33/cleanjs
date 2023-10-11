@@ -146,6 +146,9 @@ getGlobalCss() {
 // Registre a função de CSS global
 addGlobalCSS(getGlobalCss);
 
+// Registre uma função de CSS de componente global (header, menu, footer etc)
+addGlobalComponentCSS(getGlobalCompCss, 'main-class');
+
 // Gere novamente o CSS (em caso de mudança de tema, por exemplo)
 genGlobalCSS();
 genComponentsCSS(true);

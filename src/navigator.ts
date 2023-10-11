@@ -18,6 +18,7 @@ let header: HeaderComp | undefined;
 
 let componentsCSS: ComponentCss[] = [];
 let globalCSS: Function[] = [];
+let globalComponentsCSS: ComponentCss[] = [];
 let globalCSSGenerated = false;
 
 export function restorePage() {
@@ -77,6 +78,12 @@ export function addGlobalCSS(css: Function) {
     globalCSS.push(css);
 }
 
+export function addGlobalComponentCSS(getCss: Function, mainClass: string) {
+    if (!getCss || !mainClass) return;
+    if (globalComponentsCSS.find(ccss => ccss.mainClass == mainClass)) return;
+    globalComponentsCSS.push({getCss, mainClass});
+}
+
 export function genComponentsCSS(reset = false) {
     let pagePath = sessionStorage.getItem('path');
     let generatedPage = generatedPages.find(p => p.path === pagePath);
@@ -121,8 +128,11 @@ export function genComponentCSS(mainClass: string) {
 }
 
 export function genGlobalCSS() {
-    let css = globalCSS.map(gcss => gcss()).join('\n');
-    let global = genel({tag: 'style', id: 'global_style', textContent: css}).elm;
+    let cssList = globalCSS.map(gcss => gcss());
+    let compsCssList = globalComponentsCSS.map(gccss => processCss(gccss.getCss(), gccss.mainClass));
+    cssList = [...cssList, compsCssList];
+
+    let global = genel({tag: 'style', id: 'global_style', textContent: cssList.join('\n')}).elm;
 
     let current = document.getElementById('global_style');
     if (current) {

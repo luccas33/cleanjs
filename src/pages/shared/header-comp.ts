@@ -1,23 +1,24 @@
 import { genChilds, genel } from "../../html-generator";
 import { IComponent } from "../../model/icomponent";
 import { routes } from "../../routes";
-import { addGlobalCSS, navToPage } from "../../navigator";
+import { addGlobalComponentCSS, navToPage } from "../../navigator";
 import { HTMLElementModel } from "../../model/html-element-model";
 
 export class HeaderComp implements IComponent {
 
-    mainClass = 'header';
+    mainClass = 'header-comp';
     public readonly mainPanel: HTMLElement;
-    
+
     constructor() {
-        this.mainPanel = genel({tag: 'header', className: this.mainClass}).elm;
-        addGlobalCSS(getCss);
+        this.mainPanel = genel({tag: 'header', className: 'header'}).elm;
+        addGlobalComponentCSS(getCss, this.mainClass);
     }
 
     public init() {
         let models: HTMLElementModel[] = [
             {
                 tag: 'div',
+                mainClass: this.mainClass,
                 className: 'title',
                 childs: [{tag: 'h2', textContent: 'Clean JS'}]
             },
@@ -29,7 +30,7 @@ export class HeaderComp implements IComponent {
     createNavigation(): HTMLElementModel {
         let inactives = routes.filter(r => !r.isActive);
         return {
-            tag: 'nav',
+            tag: 'nav', mainClass: this.mainClass,
             childs: inactives.map(r => {
                 return {
                     tag: 'a', 
