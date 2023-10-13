@@ -10,29 +10,23 @@ export class FlexCSSPage implements IPage {
 
     model: HTMLElementModel = {
         tag: 'div', mainClass: 'flexcss', className: 'grid', childs: [
-            {tag: 'div', className: 'panel fx-xs-m-l-panel1', childs: [
+            {tag: 'div', className: 'panel panel1 xs-col6 m-col9', childs: [
                 {tag: 'div', className: 'output', childs: [
-                    {tag: 'p', className: 'xs-lbxs m-lbxs', textContent: 'xs: 100%'},
-                    {tag: 'p', className: 'xs-lbm m-lbm l-lbm', textContent: 'm: 60%'},
-                    {tag: 'p', className: 'xs-lbl l-lbl', textContent: 'l: 50%'}
+                    {tag: 'p', className: 'xs-lbxs m-lbxs', textContent: 'xs-col6 (6/6)'},
+                    {tag: 'p', className: 'm-lbm', textContent: 'm-col9 (9/18)'}
                 ]}
             ]},
-            {tag: 'div', className: 'panel fx-xs-s-m-l-xl-panel2', childs: [
+            {tag: 'div', className: 'panel panel2 xs-col6 m-col9 xl-col6', childs: [
                 {tag: 'div', className: 'output', childs: [
-                    {tag: 'p', className: 'xs-lbxs s-lbxs', textContent: 'xs: 100%'},
-                    {tag: 'p', className: 's-lbs m-lbs', textContent: 's: 60%'},
-                    {tag: 'p', className: 'm-lbm l-lbm', textContent: 'm: 25%'},
-                    {tag: 'p', className: 'l-lbl xl-lbl', textContent: 'l: 30%'},
-                    {tag: 'p', className: 'xl-lbxl', textContent: 'xl: 25%'}
+                    {tag: 'p', className: 'xs-lbxs m-lbxs', textContent: 'xs-col6 (6/6)'},
+                    {tag: 'p', className: 'm-lbm xl-lbm', textContent: 'm-col9 (9/18)'},
+                    {tag: 'p', className: 'xl-lbxl', textContent: 'xl-col6 (6/24)'}
                 ]}
             ]},
-            {tag: 'div', className: 'panel fx-xs-s-m-l-xl-panel3', childs: [
+            {tag: 'div', className: 'panel panel3 xs-col6 xl-col6', childs: [
                 {tag: 'div', className: 'output', childs: [
-                    {tag: 'p', className: 'xs-lbxs s-lbxs', textContent: 'xs: 100%'},
-                    {tag: 'p', className: 's-lbs m-lbs', textContent: 's: 40%'},
-                    {tag: 'p', className: 'm-lbm l-lbm', textContent: 'm: 15%'},
-                    {tag: 'p', className: 'l-lbl xl-lbl', textContent: 'l: 20%'},
-                    {tag: 'p', className: 'xl-lbxl', textContent: 'xl: 25%'}
+                    {tag: 'p', className: 'xs-lbxs xl-lbxs', textContent: 'xs-col6 (6/6)'},
+                    {tag: 'p', className: 'xl-lbxl', textContent: 'xl-col6 (6/24)'}
                 ]}
             ]}
         ]

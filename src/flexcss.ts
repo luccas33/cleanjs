@@ -57,8 +57,9 @@ function applyFlexCSS(sizes: FlexCSSType[], prefix: string, element: HTMLElement
     // Recupera as classes removidas
     let classesToAdd: string[] = [];
     let classesToRemove: string[] = [];
+    let offPrefix = 'off-'
     classList.forEach(c => {
-        if (c.startsWith('off-') && c.length > 8) {
+        if (c.startsWith(offPrefix) && c.length > offPrefix.length) {
             classesToAdd.push(c.substring(4));
             classesToRemove.push(c);
         }
@@ -69,7 +70,7 @@ function applyFlexCSS(sizes: FlexCSSType[], prefix: string, element: HTMLElement
     // Remove as classes
     classesToRemove = getClassesToRemove(sizes, prefix, classList);
     classList = classList.filter(c => !classesToRemove.find(ctr => ctr === c));
-    classesToRemove.forEach(c => classList.push('off-' + c));
+    classesToRemove.forEach(c => classList.push(offPrefix + c));
 
     // Aplica as alterações ao elemento
     element.className = classList.join(' ');

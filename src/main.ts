@@ -1,6 +1,9 @@
 
 import { processFlexCSS } from "./flexcss";
-import { restorePage } from './navigator';
+import { getGridStyle } from "./grid-style";
+import { addGlobalCSS, restorePage } from './navigator';
+
+addGlobalCSS(getGridStyle);
 
 restorePage();
 
