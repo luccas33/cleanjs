@@ -34,13 +34,6 @@ Um componente é uma classe que deve conter a Function init e a propriedade main
 
 ```Javascript
 export class MyComponent implements IComponent {
-    constructor() {
-        /* 
-         * Registre o CSS do componente
-         * A mainClass é responsável por isolar o CSS do componente
-         */
-        addComponentCSS(this.getCss, this.model.mainClass);
-    }
 
     /*
      * genel(): gera um elemento HTML a partir de um objeto modelo.
@@ -56,7 +49,9 @@ export class MyComponent implements IComponent {
      */
     model: HTMLElementModel = {
         tag: 'div',
-        mainClass: 'my-component',
+        mainClass: 'my-component', // classe usada exclusivamente para isolar o CSS do componente (opcional)
+        css: this.getCss(),
+        ref: 'mainModel', // variável para acessar o elemento HTML gerado
         childs: [{tag: 'p', textContent: 'MyComponent works!'}]
     }
 
@@ -77,9 +72,10 @@ export class MyComponent implements IComponent {
         `;
     }
 
-    onCSSChange() {
-        // Chame essa função para atualizar o CSS do componente caso seja alterado dinamicamente
-        genComponentCSS(this.model.mainClass);
+    onCssUpdate() {
+        // Caso seja necessário atualizar apenas o CSS do componente após sua exibição
+        // O model principal armazena todas as variáveis de elemento HTML em refs, independente da hierarquia
+        refreshCss(this.model.refs.mainModel, this.getCss());
     }
 
 }
@@ -115,7 +111,6 @@ export class MyPage implements IPage {
     pageCss = '/styles/my-page.css';
 
     model: HTMLElementModel = {tag: 'div', childs: [
-        // A propriedade 'ref' define uma variável para o elemento
         {tag: 'h2', textContent: 'Hello World! Click me.', ref: 'title', onclick: () => this.click()},
         // Um componente pode ser adicionado como filho de um objeto modelo.
         new MyComponent()
@@ -132,7 +127,7 @@ export class MyPage implements IPage {
 }
 ```
 
-### CSS global em template string:
+### CSS Global Dinâmico:
 
 ```Javascript
 getGlobalCss() {
@@ -146,12 +141,8 @@ getGlobalCss() {
 // Registre a função de CSS global
 addGlobalCSS(getGlobalCss);
 
-// Registre uma função de CSS de componente global (header, menu, footer etc)
-addGlobalComponentCSS(getGlobalCompCss, 'main-class');
-
 // Gere novamente o CSS (em caso de mudança de tema, por exemplo)
 genGlobalCSS();
-genComponentsCSS(true);
 ```
 
 #### Propriedades do Modelo:
@@ -247,28 +238,6 @@ Sim, o tutorial é só isso!
 > Quer um exemplo completo?
 
 Confira o CRUD na página Persons (arquivo pages/persons-page).
-
-# CSS em JS
-
-Escreva CSS em Javascript
-
-```Javascript
-const css: CSSInfo[] = [
-    {
-        // Seletor CSS
-        selector: '.form-input',
-        marginTop: '10px',
-        width: '100%',
-        // Estilos a serem aplicados às tags fihas de .form-input
-        styles: [
-            {selector: 'input', width: '100%'},
-            {selector: 'label, span', display: 'block'}
-        ]
-    }
-];
-
-applyCSSList([this.mainPanel], css);
-```
 
 # Rotas
 

@@ -5,6 +5,7 @@ export interface HTMLElementModel extends Partial<Record<keyof HTMLElement, any>
     tag: string,
     ref?: string,
     mainClass?: string,
+    css?: string,
     childs?: ElementChildModel | ElementChildModel[],
     [k: string]: any
 }

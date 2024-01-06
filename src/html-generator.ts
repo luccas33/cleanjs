@@ -32,6 +32,13 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
     let elm = document.createElement(model.tag);
     model.elm = elm;
     model.ref = model.ref || model.id;
+    let cssTxt = model.css && model.css.trim().length > 0 ? model.css : null;
+    if (cssTxt) {
+        let style = document.createElement('style');
+        let mainClass = model.mainClass && model.mainClass.trim().length > 0 ? model.mainClass.trim() : null;
+        style.innerHTML = mainClass ? processCss(cssTxt, mainClass) : cssTxt;
+        elm.append(style);
+    }
     let root = model.super || {};
     while (root.super) root = root.super;
     root.refs = root.refs || {};
@@ -99,9 +106,10 @@ export function genel(model: HTMLElementModel): HTMLElementModelProcessed {
             elm.append(c);
             return;
         }
-        if ('mainPanel' in c && 'init' in c && typeof c.init === 'function') {
+        if (c.mainPanel) {
             elm.append(c.mainPanel);
-            c.init();
+            if (typeof c.init == 'function')
+                c.init();
             return;
         }
         if (model.mainClass) {
@@ -171,6 +179,18 @@ export function getSetter(model: HTMLElementModel, ref: string, key: string, ini
     return setter;
 }
 
+export function refreshCss(mainPanel: HTMLElement, css: string, mainClass?: string) {
+    css = mainClass && mainClass.trim().length > 0 ? processCss(css, mainClass.trim()) : css;
+    let style = mainPanel.querySelector('style');
+    while (style) {
+        mainPanel.removeChild(style);
+        style = mainPanel.querySelector('style');
+    }
+    style = document.createElement('style');
+    style.innerHTML = css;
+    mainPanel.append(style);
+}
+
 function fireListener(listeners: {name: string, callback: Function}[], name: string, props: any) {
     listeners.filter(listener => listener.name === name)
         .forEach(listener => {
@@ -207,4 +227,24 @@ function applyValues(from: any, to: any) {
 
 function setValue(obj: any, param: string, value: any) {
     obj[param] = value;
+}
+
+function processCss(css: string, mainClass: string) {
+    mainClass = '.' + mainClass;
+    return css.split('}')
+        .filter(block => block.trim().length > 0)
+        .map(block => {
+            let selector = block.split('{')[0];
+            let body = block.split('{')[1];
+            selector = selector.split(',')
+                .filter(s => s.trim().length > 0)
+                .map(s => {
+                    let sArr = s.split(' ').filter(se => se.trim().length > 0);
+                    if (sArr[0] == mainClass) return s;
+                    sArr[0] += mainClass;
+                    return sArr.join(' ');
+                }).join(', ');
+            return ` ${selector} { ${body} } `;
+        })
+        .join('\n');
 }

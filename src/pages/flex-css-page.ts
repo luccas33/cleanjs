@@ -1,15 +1,14 @@
 
-import { genChild, genChilds, genel } from "../html-generator";
+import { genChild, genel } from "../html-generator";
 import { HTMLElementModel } from "../model/html-element-model";
 import { IPage } from "../model/ipage";
-import { addComponentCSS } from "../navigator";
 
 export class FlexCSSPage implements IPage {
 
     mainPanel = genel({tag: 'main'}).elm;
 
     model: HTMLElementModel = {
-        tag: 'div', mainClass: 'flexcss', className: 'grid', childs: [
+        tag: 'div', css: this.getCss(), mainClass: 'flexcss', className: 'grid', childs: [
             {tag: 'div', className: 'panel panel1 xs-col6 m-col9', childs: [
                 {tag: 'div', className: 'output', childs: [
                     {tag: 'p', className: 'xs-lbxs m-lbxs', textContent: 'xs-col6 (6/6)'},
@@ -31,10 +30,6 @@ export class FlexCSSPage implements IPage {
             ]}
         ]
     };
-
-    constructor() {
-        addComponentCSS(this.getCss, this.model.mainClass!);
-    }
 
     init() {
         genChild(this.mainPanel, this.model);
